@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <!-- 设置组件扫描包 -->
+    <!-- <context:component-scan base-package="priv.leon.dbmanager.controller"/>
+    <context:component-scan base-package="priv.leon.dbmanager.service"/>
+    <context:component-scan base-package="priv.leon.dbmanager.dao"/> -->
+    <context:component-scan base-package="priv.leon.dbmanager" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
+    
+    <!-- 默认的注解映射的支持 -->  
+    <mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<!-- 将StringHttpMessageConverter的默认编码设为UTF-8 -->
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+		    	<constructor-arg value="UTF-8" />
+			</bean>
+  		</mvc:message-converters>
+	</mvc:annotation-driven>
+    
+    <!-- 静态资源配置 -->
+    <mvc:resources location="/" mapping="/*.html"/>
+    
+    <!-- 容器默认的DefaultServletHandler处理 所有静态内容与无RequestMapping处理的URL-->	
+	<mvc:default-servlet-handler/> 
+    
+    <!-- 配置基础视图解析器 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    	<property name="prefix" value="/WEB-INF/views/"/>
+    	<property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <!-- 定义无需Controller的url<->view直接映射 -->
+	<mvc:view-controller path="/everglow" view-name="/system/ConnectForm"/>
+	
+	
+    <!-- 将Controller抛出的异常转到特定View, 保持SiteMesh的装饰效果 -->
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">  
+		<property name="exceptionMappings">  
+			<props>
+				<prop key="java.lang.Throwable">error/500</prop>
+            </props>  
+		</property>  
+    </bean> 
+    
+    <!-- 拦截器 -->
+	<!-- <mvc:interceptors>
+		<bean class="priv.leon.dbmanager.util.CommonInterceptor"/>
+	</mvc:interceptors> -->
+    
+</beans>
